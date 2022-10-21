@@ -11,6 +11,8 @@ st.set_page_config(
     page_title = "NLP Grp 31 Data Visualisation",
     page_icon = None, #can change this later to favicon or even any emoji
 )
+
+alt.themes.enable("streamlit")
 #-------------------------------------------------------------------------#
 #GETTING CHARSET
 with open('../data/nlp_vader_textblob_classified_data.csv', 'rb') as f:
@@ -52,11 +54,20 @@ with st.spinner(text = "Loading team data"):
 with st.spinner(text = "Loading dataframe"):
     st.title("The Data")
     st.dataframe(data = df)
-    
+
 #-------------------------------------------------------------------------#
 #Show histogram of length of tweets
 with st.spinner(text = "Loading histogram"):
     st.title("Length of the Tweets")
-    tweetData["charlen"]= tweetData['content'].str.len()
-    c = alt.Chart(tweetData).mark_bar().encode(alt.X("charlen:Q", bin = True), y = "count()")
-    st.altair_chart(c) #matplotlib charts look v ugly
+    df["Length in Characters"] = df['content'].str.len()
+    c = alt.Chart(df).mark_bar().encode(
+            alt.X("Length in Characters:Q", bin = False), y = "count()"
+            ).interactive()
+    st.altair_chart(c, use_container_width = True)
+
+    df["Length in Words"] = df['content'].str.split().map(lambda x: len(x))
+
+    c = alt.Chart(df).mark_bar().encode(
+            alt.X("Length in Words:Q", bin = False), y = "count()"
+            ).interactive()
+    st.altair_chart(c, use_container_width = True)
