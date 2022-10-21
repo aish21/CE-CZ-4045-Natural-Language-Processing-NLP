@@ -1,9 +1,12 @@
 #-------------------------------------------------------------------------#
 #Imports
+from tkinter import Y
 import streamlit as st
 import pandas as pd
 import chardet
 import altair as alt
+from nltk.corpus import stopwords
+from sklearn.feature_extraction.text import CountVectorizer
 
 #-------------------------------------------------------------------------#
 #Config for the page
@@ -26,18 +29,10 @@ with open('../data/nlp_vader_textblob_classified_data.csv', 'rb') as f:
 #Team selection widget
 st.subheader("Choose the teams")  
 
-def formatfunc(inp):
-    if inp == "Tottenham":
-        return "Tottenahm Hotspurs"
-    if inp == "ManCity":
-        return "Manchester City"
-    return inp
-
 choices = st.multiselect(
         label = "Select a team",
         options = ["Arsenal", "Chelsea", "Liverpool", "ManCity", "Manchester United", "Tottenham"],
         default = ["Arsenal", "Chelsea", "Liverpool", "ManCity", "Manchester United", "Tottenham"],
-        format_func = formatfunc,
         help = "Choose any combination of the teams you want to see",
         label_visibility = "collapsed"
         )                
@@ -51,9 +46,20 @@ with st.spinner(text = "Loading team data"):
 
 #-------------------------------------------------------------------------#
 #just to display the dataframe
-with st.spinner(text = "Loading dataframe"):
-    st.title("The Data")
-    st.dataframe(data = df)
+#with st.spinner(text = "Loading dataframe"):
+#    st.title("The Data")
+#    st.dataframe(data = df)
+#THIS TAKES THE LONGEST TIME - REMOVE??
+#-------------------------------------------------------------------------#
+#Ratio of teams
+with st.spinner(text = "Loading Ratio"):
+    st.title("Ratio of tweets by team")
+    c = alt.Chart(df).mark_bar().encode(
+            y = alt.Y("primaryTeam:N"), 
+            x = "count():Q",
+            color = "primaryTeam:N"
+            ).interactive()
+    st.altair_chart(c, use_container_width = True)
 
 #-------------------------------------------------------------------------#
 #Show histogram of length of tweets
@@ -61,13 +67,74 @@ with st.spinner(text = "Loading histogram"):
     st.title("Length of the Tweets")
     df["Length in Characters"] = df['content'].str.len()
     c = alt.Chart(df).mark_bar().encode(
-            alt.X("Length in Characters:Q", bin = False), y = "count()"
+            x = alt.X("Length in Characters:Q", bin = alt.Bin(maxbins=80)), 
+            y = "count():Q",
+            color = "primaryTeam:N"
             ).interactive()
     st.altair_chart(c, use_container_width = True)
 
     df["Length in Words"] = df['content'].str.split().map(lambda x: len(x))
 
     c = alt.Chart(df).mark_bar().encode(
-            alt.X("Length in Words:Q", bin = False), y = "count()"
+            x = alt.X("Length in Words:Q", bin = False),
+            y = "count()",
+            color = "primaryTeam:N"
+            ).interactive()
+    st.altair_chart(c, use_container_width = True)
+
+#-------------------------------------------------------------------------#
+#Common Stopwords
+
+with st.spinner(text = "Loading stopwords"):
+    st.title("Stopwords")
+
+    
+
+    corpus=[]
+    check= tweetData['content'].str.split()
+    check=check.values.tolist()
+    corpus=[word for i in check for word in i]
+    stop=set(stopwords.words('english'))
+    from collections import defaultdict
+    dic=defaultdict(int)
+    for word in corpus:
+        if word in stop:
+            dic[word]+=1
+
+    n = st.slider("How many top words?", 5, 25, 10)  
+    top = sorted(dic.items(), key=lambda x:x[1],reverse=True)[:n]
+    top = pd.DataFrame(top, columns = ["Words", "Counts"])
+
+    c = alt.Chart(top).mark_bar().encode(
+            y = alt.Y("Words:N", sort="-x"),
+            x = "Counts:Q",
+            color = "Words:N"
+            ).interactive()
+    st.altair_chart(c, use_container_width = True)
+
+#-------------------------------------------------------------------------#
+#Top k n-grams
+    
+with st.spinner(text = "Loading ngrams"):
+    st.title("n grams")
+    n = st.slider("n-gram", 2, 5, 2) 
+    k = st.slider("How many n-grams?", 5, 25, 10) 
+
+    def top_ngrams(corpus, n):
+        vec = CountVectorizer(ngram_range=(n, n)).fit(corpus)
+        bag_of_words = vec.transform(corpus)
+        sum_words = bag_of_words.sum(axis=0) 
+        words_freq = [(word, sum_words[0, idx]) 
+                      for word, idx in vec.vocabulary_.items()]
+        words_freq =sorted(words_freq, key = lambda x: x[1], reverse=True)
+        return words_freq[:10]
+
+    top_k_ngrams = top_ngrams(df['content'],n)[:k]
+    print(top_k_ngrams)
+    top = pd.DataFrame(top_k_ngrams, columns = [f"ngram", "Counts"])
+    c = alt.Chart(top).mark_bar().encode(
+            y = alt.Y("ngram:N", sort="-x"),
+            x = "Counts:Q",
+            color = "ngram:N"
             ).interactive()
     st.altair_chart(c, use_container_width = True)
