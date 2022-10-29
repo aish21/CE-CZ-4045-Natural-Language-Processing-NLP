@@ -20,11 +20,11 @@ alt.themes.enable("streamlit")
 #GETTING CHARSET
 with open('../data/nlp_vader_textblob_classified_data.csv', 'rb') as f:
     f.readline() 
-    enc = chardet.detect(f.readline())  # or readline if the file is large
+    enc = chardet.detect(f.readline())  
+    # or readline if the file is large
     #f.read() was taking too long and f.readline() didnt work because 
     #i assume the first line was giving the wrong encoding for whatever 
     #reason but getting the encoding from line 2 just worked idk why
-
 #-------------------------------------------------------------------------#
 #Team selection widget
 st.subheader("Choose the teams")  
@@ -34,8 +34,7 @@ choices = st.multiselect(
         options = ["Arsenal", "Chelsea", "Liverpool", "ManCity", "Manchester United", "Tottenham"],
         default = ["Arsenal", "Chelsea", "Liverpool", "ManCity", "Manchester United", "Tottenham"],
         help = "Choose any combination of the teams you want to see",
-        label_visibility = "collapsed"
-        )                
+        label_visibility = "collapsed")                
 #-------------------------------------------------------------------------#
 #Loading of team data with a nice spinner
 with st.spinner(text = "Loading team data"):
@@ -138,3 +137,58 @@ with st.spinner(text = "Loading ngrams"):
             color = "ngram:N"
             ).interactive()
     st.altair_chart(c, use_container_width = True)
+
+#-------------------------------------------------------------------------#
+# Map Data
+manU_map = "man_u_map.html"
+manC_map = "ManC_map.html"
+chelsea_map = "chelsea_map.html"
+liv_map = "liverpool_map.html"
+arsenal_map = "arsenal_map.html"
+tot_map = "tot_map.html"
+
+with st.spinner(text = "Loading tweet location data"):
+    st.title("Tweet Locations")
+
+    # Read file and keep in variable
+    with open(manU_map,'r') as f: 
+        manU_data = f.read()
+    
+    with open(manC_map,'r') as f: 
+        manC_data = f.read()
+    
+    with open(chelsea_map,'r') as f: 
+        chelsea_data = f.read()
+    
+    with open(liv_map,'r') as f: 
+        liv_data = f.read()
+    
+    with open(arsenal_map,'r') as f: 
+        arsenal_data = f.read()
+    
+    with open(tot_map,'r') as f: 
+        tot_data = f.read()
+
+    # Show in maps
+    st.header("Manchester United")
+    st.components.v1.html(manU_data, height=400, width=700)
+
+    # Show in maps
+    st.header("Manchester City")
+    st.components.v1.html(manC_data, height=400, width=700) 
+
+    # Show in maps
+    st.header("Chelsea")
+    st.components.v1.html(chelsea_data, height=400, width=700) 
+
+    # Show in maps
+    st.header("Liverpool")
+    st.components.v1.html(liv_data, height=400, width=700) 
+
+    # Show in maps
+    st.header("Arsenal")
+    st.components.v1.html(arsenal_data, height=400, width=700) 
+
+    # Show in maps
+    st.header("Tottenham")
+    st.components.v1.html(tot_data, height=400, width=700)  
