@@ -7,7 +7,11 @@ import chardet
 import altair as alt
 from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import CountVectorizer
-
+import nltk
+#import gensim
+from nltk.stem import WordNetLemmatizer,PorterStemmer
+from nltk.tokenize import word_tokenize
+import pyLDAvis.gensim_models as gensimvis
 #-------------------------------------------------------------------------#
 #Config for the page
 st.set_page_config(
@@ -138,3 +142,49 @@ with st.spinner(text = "Loading ngrams"):
             color = "ngram:N"
             ).interactive()
     st.altair_chart(c, use_container_width = True)
+
+
+
+def get_lda_objects(text):
+    nltk.download('stopwords')
+    nltk.download('punkt')
+    nltk.download('wordnet')
+    stop=set(stopwords.words('english'))
+
+    
+    def _preprocess_text(text):
+        corpus=[]
+        stem=PorterStemmer()
+        lem=WordNetLemmatizer()
+        for news in text:
+            words=[w for w in word_tokenize(news) if (w not in stop)]
+
+            words=[lem.lemmatize(w) for w in words if len(w)>2]
+
+            corpus.append(words)
+        return corpus
+    
+    corpus=_preprocess_text(text)
+    
+    dic=gensim.corpora.Dictionary(corpus)
+    bow_corpus = [dic.doc2bow(doc) for doc in corpus]
+    
+    lda_model =  gensim.models.LdaMulticore(bow_corpus, 
+                                   num_topics = 10, 
+                                   id2word = dic,                                    
+                                   passes = 10,
+                                   workers = 2)
+    
+    return lda_model, bow_corpus, dic
+
+def plot_lda_vis(lda_model, bow_corpus, dic):
+    vis = gensimvis.prepare(lda_model, bow_corpus, dic)
+    return vis
+
+lda_model, bow_corpus, dic = get_lda_objects(tweetData['content'])
+
+lda_model.show_topics()
+
+vis = plot_lda_vis(lda_model, bow_corpus, dic)
+
+st.altair_chart(vis, use_container_width = True)
