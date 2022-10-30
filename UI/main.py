@@ -7,6 +7,7 @@ import chardet
 import altair as alt
 from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import CountVectorizer
+from PIL import Image
 
 #-------------------------------------------------------------------------#
 #Config for the page
@@ -192,3 +193,94 @@ with st.spinner(text = "Loading tweet location data"):
     # Show in maps
     st.header("Tottenham")
     st.components.v1.html(tot_data, height=400, width=700)  
+
+#-------------------------------------------------------------------------#
+# LDA data
+manU_lda = "manu_lda.html"
+manC_lda = "manc_lda.html"
+chelsea_lda = "chelsea_lda.html"
+liv_lda = "liv_lda.html"
+arsenal_lda = "arsenal_lda.html"
+tot_lda = "tot_lda.html"
+
+with st.spinner(text = "Loading tweets LDA"):
+    st.title("Latent Dirichlet Allocation")
+
+    # Read file and keep in variable
+    with open(manU_lda,'r') as f: 
+        manU_lda_data = f.read()
+    
+    with open(manC_lda,'r') as f: 
+        manC_lda_data = f.read()
+    
+    with open(chelsea_lda,'r') as f: 
+        chelsea_lda_data = f.read()
+    
+    with open(liv_lda,'r') as f: 
+        liv_lda_data = f.read()
+    
+    with open(arsenal_lda,'r') as f: 
+        arsenal_lda_data = f.read()
+    
+    with open(tot_lda,'r') as f: 
+        tot_lda_data = f.read()
+
+    # Show in maps
+    st.header("Manchester United")
+    st.components.v1.html(manU_lda_data, height=800, width=800, scrolling=True)
+
+    # Show in maps
+    st.header("Manchester City")
+    st.components.v1.html(manC_lda_data, height=800, width=800, scrolling=True) 
+
+    # Show in maps
+    st.header("Chelsea")
+    st.components.v1.html(chelsea_lda_data, height=800, width=800, scrolling=True) 
+
+    # Show in maps
+    st.header("Liverpool")
+    st.components.v1.html(liv_lda_data, height=800, width=800, scrolling=True) 
+
+    # Show in maps
+    st.header("Arsenal")
+    st.components.v1.html(arsenal_lda_data, height=800, width=800, scrolling=True) 
+
+    # Show in maps
+    st.header("Tottenham")
+    st.components.v1.html(tot_lda_data, height=800, width=800, scrolling=True)
+
+#-------------------------------------------------------------------------#
+# Word Cloud
+wc = Image.open('wc.png')
+wc_proc = Image.open('wc_proc.png')
+manu_wc = Image.open('manu_wc.png')
+manu_wc_proc = Image.open('manu_wc_proc.png')
+manc_wc = Image.open('manc_wc.png')
+manc_wc_proc = Image.open('manc_wc_proc.png')
+arsenal_wc = Image.open('arsenal_wc.png')
+arsenal_wc_proc = Image.open('arsenal_wc_proc.png')
+chelsea_wc = Image.open('chelsea_wc.png')
+chelsea_wc_proc = Image.open('chelsea_wc_proc.png')
+liv_wc = Image.open('liv_wc.png')
+liv_wc_proc = Image.open('liv_wc_proc.png')
+tot_wc = Image.open('tot_wc.png')
+tot_wc_proc = Image.open('tot_wc_proc.png')
+
+with st.spinner(text = "Loading WordCloud"):
+    st.title("WordCloud - Raw Data")
+    st.image(wc, caption='Wordcloud for raw corpus')
+    st.image(manu_wc, caption='Wordcloud for raw corpus - Manchester United')
+    st.image(manc_wc, caption='Wordcloud for raw corpus - Manchester City')
+    st.image(arsenal_wc, caption='Wordcloud for raw corpus - Arsenal')
+    st.image(chelsea_wc, caption='Wordcloud for raw corpus - Chelsea')
+    st.image(liv_wc, caption='Wordcloud for raw corpus - Liverpool')
+    st.image(tot_wc, caption='Wordcloud for raw corpus - Tottenham')
+
+    st.title("WordCloud - Processed Corpus")
+    st.image(wc_proc, caption='Wordcloud for processed corpus')
+    st.image(manu_wc_proc, caption='Wordcloud for raw corpus - Manchester United')
+    st.image(manc_wc_proc, caption='Wordcloud for raw corpus - Manchester City')
+    st.image(arsenal_wc_proc, caption='Wordcloud for raw corpus - Arsenal')
+    st.image(chelsea_wc_proc, caption='Wordcloud for raw corpus - Chelsea')
+    st.image(liv_wc_proc, caption='Wordcloud for raw corpus - Liverpool')
+    st.image(tot_wc_proc, caption='Wordcloud for raw corpus - Tottenham')
