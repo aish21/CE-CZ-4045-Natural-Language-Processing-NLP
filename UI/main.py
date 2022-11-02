@@ -310,7 +310,7 @@ with st.spinner(text = "Loading WordCloud"):
     st.image(chelsea_wc_proc, caption='Wordcloud for raw corpus - Chelsea')
     st.image(liv_wc_proc, caption='Wordcloud for raw corpus - Liverpool')
     st.image(tot_wc_proc, caption='Wordcloud for raw corpus - Tottenham')
-    st.components.v1.html(tot_data, height=400, width=700) 
+    
 
 #------------------------------------------------------------#
 # Results
@@ -320,7 +320,7 @@ data= {1: ['Gaussian Naive Bayes',0.469,0.473,0.482,0.4815],
                           2:['Random Forest',0.445, 0.456, 0.445, 0.445],
                           3: ['VADER',0.460,0.469,0.461,0.4611],
                           4: ['TextBlob',0.446,0.462,0.442,0.4422],
-                          5:['LSTM+Attention Neural net',],
+                          5:['LSTM+Attention Neural net', 0.506, 0.335,0.506,0.386],
                           6: ['RoBERTa Model(with Enhancements)',0.78,0.76,0.76,0.78]}
 evaldf = pd.DataFrame.from_dict(data,orient = 'index',
    columns= ['Models','F1','Precision','Recall','Accuracy']) 
