@@ -2,12 +2,34 @@
 #Imports
 from tkinter import Y
 import streamlit as st
+import matplotlib.pyplot as plt
+import plotly.express as px
 import pandas as pd
 import chardet
 import altair as alt
+import nltk
+import ssl
+# In case there are issues while downloading stopwrods due to ssl licence/certificate
+try:
+    _create_unverified_https_context = ssl._create_unverified_context
+except AttributeError:
+    pass
+else:
+    ssl._create_default_https_context = _create_unverified_https_context
+
+nltk.download('stopwords')
 from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import CountVectorizer
+<<<<<<< HEAD
 from PIL import Image
+=======
+import nltk
+#import gensim
+from nltk.stem import WordNetLemmatizer,PorterStemmer
+from nltk.tokenize import word_tokenize
+import pyLDAvis.gensim_models as gensimvis
+
+>>>>>>> f9ac92bf1734e30577f12e238af7a5eb0bb7efd7
 
 #-------------------------------------------------------------------------#
 #Config for the page
@@ -17,6 +39,7 @@ st.set_page_config(
 )
 
 alt.themes.enable("streamlit")
+st.title('Premier League Tweets Sentiment Analysis')
 #-------------------------------------------------------------------------#
 #GETTING CHARSET
 with open('../data/nlp_vader_textblob_classified_data.csv', 'rb') as f:
@@ -46,10 +69,9 @@ with st.spinner(text = "Loading team data"):
 
 #-------------------------------------------------------------------------#
 #just to display the dataframe
-#with st.spinner(text = "Loading dataframe"):
-#    st.title("The Data")
-#    st.dataframe(data = df)
-#THIS TAKES THE LONGEST TIME - REMOVE??
+with st.spinner(text = "Loading dataframe"):
+   st.title("Dataset Sample")
+   st.dataframe(data = df[:10])
 #-------------------------------------------------------------------------#
 #Ratio of teams
 with st.spinner(text = "Loading Ratio"):
@@ -129,7 +151,7 @@ with st.spinner(text = "Loading ngrams"):
         words_freq =sorted(words_freq, key = lambda x: x[1], reverse=True)
         return words_freq[:10]
 
-    top_k_ngrams = top_ngrams(df['content'],n)[:k]
+    top_k_ngrams = top_ngrams(df['vader_preprocessing_text'],n)[:k]
     print(top_k_ngrams)
     top = pd.DataFrame(top_k_ngrams, columns = [f"ngram", "Counts"])
     c = alt.Chart(top).mark_bar().encode(
@@ -138,6 +160,16 @@ with st.spinner(text = "Loading ngrams"):
             color = "ngram:N"
             ).interactive()
     st.altair_chart(c, use_container_width = True)
+
+#-------------------------------------------------------------------------#
+# Sentiment pie Chart
+with st.spinner(text = "Loading Sentiment Pie Chart"):
+    st.title("Tweet Sentiment Pie Chart")
+    pc = px.pie(df,values = df['final_class'].value_counts(normalize=True),names = ['Negative','Positive','Neutral'],color = df['final_class'].unique()
+            ,color_discrete_map={-1:'red',
+                                 1:'green',
+                                 0:'blue'})
+    st.plotly_chart(pc)
 
 #-------------------------------------------------------------------------#
 # Map Data
@@ -192,6 +224,7 @@ with st.spinner(text = "Loading tweet location data"):
 
     # Show in maps
     st.header("Tottenham")
+<<<<<<< HEAD
     st.components.v1.html(tot_data, height=400, width=700)  
 
 #-------------------------------------------------------------------------#
@@ -284,3 +317,21 @@ with st.spinner(text = "Loading WordCloud"):
     st.image(chelsea_wc_proc, caption='Wordcloud for raw corpus - Chelsea')
     st.image(liv_wc_proc, caption='Wordcloud for raw corpus - Liverpool')
     st.image(tot_wc_proc, caption='Wordcloud for raw corpus - Tottenham')
+=======
+    st.components.v1.html(tot_data, height=400, width=700) 
+
+#------------------------------------------------------------#
+# Results
+with st.spinner(text = "Loading Evaluation Metrics"):
+   st.title("Summary of Evaluation Metrics")
+data= {1: ['Gaussian Naive Bayes',0.469,0.473,0.482,0.4815],
+                          2:['Random Forest',0.445, 0.456, 0.445, 0.445],
+                          3: ['VADER',0.460,0.469,0.461,0.4611],
+                          4: ['TextBlob',0.446,0.462,0.442,0.4422],
+                          5:['LSTM+Attention Neural net',],
+                          6: ['RoBERTa Model(with Enhancements)',0.78,0.76,0.76,0.78]}
+evaldf = pd.DataFrame.from_dict(data,orient = 'index',
+   columns= ['Models','F1','Precision','Recall','Accuracy']) 
+st.dataframe(data = evaldf)
+
+>>>>>>> f9ac92bf1734e30577f12e238af7a5eb0bb7efd7
