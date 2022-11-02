@@ -20,16 +20,12 @@ else:
 nltk.download('stopwords')
 from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import CountVectorizer
-<<<<<<< HEAD
 from PIL import Image
-=======
 import nltk
 #import gensim
 from nltk.stem import WordNetLemmatizer,PorterStemmer
 from nltk.tokenize import word_tokenize
 import pyLDAvis.gensim_models as gensimvis
-
->>>>>>> f9ac92bf1734e30577f12e238af7a5eb0bb7efd7
 
 #-------------------------------------------------------------------------#
 #Config for the page
@@ -109,8 +105,6 @@ with st.spinner(text = "Loading histogram"):
 
 with st.spinner(text = "Loading stopwords"):
     st.title("Stopwords")
-
-    
 
     corpus=[]
     check= tweetData['content'].str.split()
@@ -224,7 +218,6 @@ with st.spinner(text = "Loading tweet location data"):
 
     # Show in maps
     st.header("Tottenham")
-<<<<<<< HEAD
     st.components.v1.html(tot_data, height=400, width=700)  
 
 #-------------------------------------------------------------------------#
@@ -317,7 +310,6 @@ with st.spinner(text = "Loading WordCloud"):
     st.image(chelsea_wc_proc, caption='Wordcloud for raw corpus - Chelsea')
     st.image(liv_wc_proc, caption='Wordcloud for raw corpus - Liverpool')
     st.image(tot_wc_proc, caption='Wordcloud for raw corpus - Tottenham')
-=======
     st.components.v1.html(tot_data, height=400, width=700) 
 
 #------------------------------------------------------------#
@@ -333,5 +325,3 @@ data= {1: ['Gaussian Naive Bayes',0.469,0.473,0.482,0.4815],
 evaldf = pd.DataFrame.from_dict(data,orient = 'index',
    columns= ['Models','F1','Precision','Recall','Accuracy']) 
 st.dataframe(data = evaldf)
-
->>>>>>> f9ac92bf1734e30577f12e238af7a5eb0bb7efd7
