@@ -15,6 +15,7 @@ Instructions to run:
 
     `streamlit run .\main.py`
 
-The visualisation will open in your browser
+The visualisation will open in your browser 
+Please wait for around a minute to allow the plots to render due to large volume of data being used
 
 
